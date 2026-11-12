@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Interés Simple</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Segoe UI, Arial, sans-serif; background: #eef2f7; margin: 0;
+           display: flex; justify-content: center; padding: 30px 15px; }
+    .card { background: #fff; max-width: 440px; width: 100%; padding: 28px;
+            border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+    h1 { font-size: 1.4rem; color: #1f4e8c; margin-top: 0; text-align: center; }
+    label { display: block; margin: 14px 0 4px; font-weight: 600; font-size: .9rem; }
+    input, select { width: 100%; padding: 10px; border: 1px solid #b8c2cf;
+                    border-radius: 6px; font-size: 1rem; }
+    button { width: 100%; margin-top: 20px; padding: 12px; background: #1f4e8c;
+             color: #fff; border: 0; border-radius: 6px; font-size: 1rem; cursor: pointer; }
+    button:hover { background: #163a69; }
+    #resultado { margin-top: 20px; padding: 14px; background: #e8f1fb;
+                 border-radius: 8px; display: none; line-height: 1.7; }
+    .formula { font-size: .8rem; color: #555; text-align: center; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Calculadora de Interés Simple</h1>
+
+    <label for="capital">Capital inicial (C)</label>
+    <input type="number" id="capital" min="0" step="any" placeholder="Ej: 5000000">
+
+    <label for="tasa">Tasa de interés (i) en %</label>
+    <input type="number" id="tasa" min="0" step="any" placeholder="Ej: 1.5">
+
+    <label for="periodoTasa">La tasa es</label>
+    <select id="periodoTasa">
+      <option value="mensual">Mensual</option>
+      <option value="anual">Anual</option>
+    </select>
+
+    <label for="tiempo">Tiempo (t)</label>
+    <input type="number" id="tiempo" min="0" step="any" placeholder="Ej: 12">
+
+    <label for="unidadTiempo">Unidad del tiempo</label>
+    <select id="unidadTiempo">
+      <option value="meses">Meses</option>
+      <option value="anios">Años</option>
+    </select>
+
+    <button onclick="calcular()">Calcular</button>
+
+    <div id="resultado"></div>
+    <p class="formula">I = C × i × t &nbsp;|&nbsp; M = C + I</p>
+  </div>
+
+  <script>
+    function calcular() {
+      const C = parseFloat(document.getElementById("capital").value);
+      const tasa = parseFloat(document.getElementById("tasa").value) / 100;
+      const tiempo = parseFloat(document.getElementById("tiempo").value);
+      const periodoTasa = document.getElementById("periodoTasa").value;
+      const unidadTiempo = document.getElementById("unidadTiempo").value;
+      const out = document.getElementById("resultado");
+
+      if ([C, tasa, tiempo].some(isNaN) || C < 0 || tasa < 0 || tiempo < 0) {
+        out.style.display = "block";
+        out.innerHTML = "Por favor ingresa valores numéricos válidos.";
+        return;
+      }
+
+      // Homogeneizar tasa y tiempo en la misma unidad
+      let t = tiempo;
+      if (periodoTasa === "mensual" && unidadTiempo === "anios") t = tiempo * 12;
+      if (periodoTasa === "anual" && unidadTiempo === "meses") t = tiempo / 12;
+
+      const I = C * tasa * t;
+      const M = C + I;
+      const fmt = n => n.toLocaleString("es-CO", { style: "currency", currency: "COP" });
+
+      out.style.display = "block";
+      out.innerHTML = `<strong>Interés (I):</strong> ${fmt(I)}<br>
+                       <strong>Monto final (M):</strong> ${fmt(M)}`;
+    }
+  </script>
+</body>
+</html>
